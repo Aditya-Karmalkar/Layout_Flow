@@ -1,28 +1,25 @@
 import 'package:flutter/widgets.dart';
 import '../flow_scope.dart';
 
-/// A smart layout widget that renders as a [Row] on wider screens
-/// and collapses to a [Column] on compact screens.
+enum _FlowRowMode {
+  breakpoint,
+  constraints,
+  orientation,
+}
+
+/// A smart layout widget that renders as a [Row] or [Column] based on
+/// available space or orientation.
 ///
-/// ```dart
-/// FlowRow(
-///   children: [
-///     Expanded(child: Card(...)),
-///     Expanded(child: Card(...)),
-///   ],
-/// )
-/// ```
-///
-/// On phones (< [breakpoint]): children stack vertically as a [Column].
-/// On tablets and web (>= [breakpoint]): children sit side-by-side as a [Row].
+/// By default, it uses [LayoutBuilder] to check its own available width
+/// against the [breakpoint].
 class FlowRow extends StatelessWidget {
   /// The children to display.
   final List<Widget> children;
 
-  /// The screen width threshold (in logical pixels) below which
+  /// The width threshold (in logical pixels) below which
   /// the layout switches from [Row] to [Column].
   ///
-  /// Defaults to 480 (aligns with [FlowBreakpoint.compact]).
+  /// Defaults to 480.
   final double breakpoint;
 
   /// Main axis alignment when rendered as a [Row].
@@ -40,6 +37,12 @@ class FlowRow extends StatelessWidget {
   /// Gap between children (applied via [SizedBox]).
   final double? gap;
 
+  /// The mode used to determine the layout switch.
+  final _FlowRowMode _mode;
+
+  /// Standard constructor that adapts based on local constraints.
+  ///
+  /// If the available width is less than [breakpoint], it renders as a [Column].
   const FlowRow({
     super.key,
     required this.children,
@@ -49,45 +52,77 @@ class FlowRow extends StatelessWidget {
     this.columnMainAxisAlignment = MainAxisAlignment.start,
     this.columnCrossAxisAlignment = CrossAxisAlignment.stretch,
     this.gap,
-  });
+  }) : _mode = _FlowRowMode.constraints;
+
+  /// Explicitly adapts based on a fixed breakpoint relative to screen width.
+  const FlowRow.breakpoint({
+    super.key,
+    required this.children,
+    this.breakpoint = 480,
+    this.rowMainAxisAlignment = MainAxisAlignment.start,
+    this.rowCrossAxisAlignment = CrossAxisAlignment.center,
+    this.columnMainAxisAlignment = MainAxisAlignment.start,
+    this.columnCrossAxisAlignment = CrossAxisAlignment.stretch,
+    this.gap,
+  }) : _mode = _FlowRowMode.breakpoint;
+
+  /// Adapts based on device orientation.
+  ///
+  /// Stacks as a [Column] in portrait, and as a [Row] in landscape.
+  const FlowRow.orientation({
+    super.key,
+    required this.children,
+    this.rowMainAxisAlignment = MainAxisAlignment.start,
+    this.rowCrossAxisAlignment = CrossAxisAlignment.center,
+    this.columnMainAxisAlignment = MainAxisAlignment.start,
+    this.columnCrossAxisAlignment = CrossAxisAlignment.stretch,
+    this.gap,
+  })  : _mode = _FlowRowMode.orientation,
+        breakpoint = 0;
 
   @override
   Widget build(BuildContext context) {
-    final flow = FlowScope.of(context);
-    final isCompact = flow.screen.width < breakpoint;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isCompact;
 
-    final spacedChildren = gap != null
-        ? _intersperse(
-            children,
-            isCompact
-                ? SizedBox(height: gap)
-                : SizedBox(width: gap),
-          )
-        : children;
+        switch (_mode) {
+          case _FlowRowMode.breakpoint:
+            final flow = FlowScope.of(context);
+            isCompact = flow.screen.width < breakpoint;
+          case _FlowRowMode.orientation:
+            final orientation = MediaQuery.orientationOf(context);
+            isCompact = orientation == Orientation.portrait;
+          case _FlowRowMode.constraints:
+            isCompact = constraints.maxWidth < breakpoint;
+        }
 
-    if (isCompact) {
-      // In Column mode, Expanded/Flexible children cause a layout crash when
-      // the Column is inside an unbounded-height parent (e.g. SingleChildScrollView).
-      // Unwrap them — crossAxisAlignment: stretch already fills the full width.
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: columnMainAxisAlignment,
-        crossAxisAlignment: columnCrossAxisAlignment,
-        children: _unwrapFlex(spacedChildren),
-      );
-    }
+        final spacedChildren = gap != null
+            ? _intersperse(
+                children,
+                isCompact ? SizedBox(height: gap) : SizedBox(width: gap),
+              )
+            : children;
 
-    return Row(
-      mainAxisAlignment: rowMainAxisAlignment,
-      crossAxisAlignment: rowCrossAxisAlignment,
-      children: spacedChildren,
+        if (isCompact) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: columnMainAxisAlignment,
+            crossAxisAlignment: columnCrossAxisAlignment,
+            children: _unwrapFlex(spacedChildren),
+          );
+        }
+
+        return Row(
+          mainAxisAlignment: rowMainAxisAlignment,
+          crossAxisAlignment: rowCrossAxisAlignment,
+          children: spacedChildren,
+        );
+      },
     );
   }
 
   /// Unwraps [Expanded] and [Flexible] widgets to their inner child.
-  ///
-  /// Called only in Column mode, where flex sizing is invalid inside
-  /// vertically-unbounded parents like [SingleChildScrollView].
   List<Widget> _unwrapFlex(List<Widget> widgets) {
     return widgets.map((w) {
       if (w is Expanded) return w.child;

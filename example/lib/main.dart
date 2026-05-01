@@ -5,7 +5,9 @@ void main() {
   runApp(
     const LayoutFlow(
       designSize: Size(375, 812),
-      child: MyApp(),
+      child: FlowDebugOverlay(
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -16,137 +18,176 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'layout_flow Demo',
+      title: 'layout_flow Showcase',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A73E8)),
         useMaterial3: true,
+        // New in v0.2.0: Customizing the base spacing grid
+        extensions: const [
+          FlowTheme(spacingBase: 8.0),
+        ],
       ),
       home: const DemoHome(),
     );
   }
 }
 
-class DemoHome extends StatelessWidget {
+class DemoHome extends StatefulWidget {
   const DemoHome({super.key});
 
   @override
+  State<DemoHome> createState() => _DemoHomeState();
+}
+
+class _DemoHomeState extends State<DemoHome> {
+  int _selectedIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FlowScaffold(
+      navigation: FlowNavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        destinations: const [
+          FlowNavigationDestination(
+            icon: Icons.dashboard_outlined,
+            selectedIcon: Icons.dashboard,
+            label: 'Dashboard',
+          ),
+          FlowNavigationDestination(
+            icon: Icons.layers_outlined,
+            selectedIcon: Icons.layers,
+            label: 'Components',
+          ),
+          FlowNavigationDestination(
+            icon: Icons.settings_outlined,
+            selectedIcon: Icons.settings,
+            label: 'Settings',
+          ),
+        ],
+      ),
       appBar: AppBar(
         title: FlowText(
-          'layout_flow',
+          'layout_flow Showcase',
           style: FlowTextStyle.title(context).copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Login Card demo ──────────────────────────────
-            const _SectionLabel('Login Screen Demo'),
-            const _LoginCard(),
-            SizedBox(height: FlowSpacing.lg(context)),
-
-            // ── Dashboard FlowRow demo ────────────────────────
-            const _SectionLabel('Dashboard — FlowRow'),
-            Padding(
-              padding: FlowSpacing.symmetric(
-                context,
-                horizontal: 16,
-                vertical: 0,
-              ),
-              child: FlowRow(
-                gap: FlowSpacing.md(context),
-                children: const [
-                  Expanded(child: _StatCard(label: 'Revenue', value: '\$12,400')),
-                  Expanded(child: _StatCard(label: 'Users', value: '3,821')),
-                  Expanded(child: _StatCard(label: 'Sessions', value: '9,104')),
-                ],
-              ),
-            ),
-            SizedBox(height: FlowSpacing.lg(context)),
-
-            // ── Typography scale demo ────────────────────────
-            const _SectionLabel('Typography Scale'),
-            const _TypeScaleDemo(),
-            SizedBox(height: FlowSpacing.xl(context)),
-          ],
-        ),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          _buildDashboard(context),
+          _buildComponents(context),
+          const Center(child: Text('Settings Page')),
+        ],
       ),
     );
   }
-}
 
-// ── Login Card ──────────────────────────────────────────────────────────────
-
-class _LoginCard extends StatelessWidget {
-  const _LoginCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return FlowContainer(
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: FlowRadius.lg(context),
-        ),
-        child: FlowContainer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              FlowText(
-                'Welcome back',
-                style: FlowTextStyle.headline(context),
+  Widget _buildDashboard(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _SectionLabel('Responsive Grid — FlowGrid'),
+          Padding(
+            padding: FlowSpacing.symmetric(context, horizontal: 16),
+            child: FlowGrid(
+              gap: FlowSpacing.md(context),
+              columns: const FlowGridColumns(
+                compact: 1,
+                medium: 2,
+                expanded: 4,
               ),
-              SizedBox(height: FlowSpacing.xs(context)),
-              FlowText(
-                'Sign in to your account to continue.',
-                style: FlowTextStyle.bodySmall(context).copyWith(
-                  color: Colors.grey[600],
-                ),
-              ),
-              SizedBox(height: FlowSpacing.lg(context)),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: FlowRadius.sm(context),
-                  ),
-                ),
-              ),
-              SizedBox(height: FlowSpacing.md(context)),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: FlowRadius.sm(context),
-                  ),
-                ),
-              ),
-              SizedBox(height: FlowSpacing.lg(context)),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: FlowSpacing.symmetric(context, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: FlowRadius.md(context),
-                  ),
-                ),
-                child: FlowText(
-                  'Sign In',
-                  style: FlowTextStyle.body(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
+              children: const [
+                _StatCard(label: 'Revenue', value: '\$12.4k', icon: Icons.attach_money),
+                _StatCard(label: 'Users', value: '3.8k', icon: Icons.people),
+                _StatCard(label: 'Sessions', value: '9.1k', icon: Icons.timer),
+                _StatCard(label: 'Growth', value: '+14%', icon: Icons.trending_up),
+              ],
+            ),
           ),
-        ),
+          const _SectionLabel('Adaptive Row — FlowRow'),
+          Padding(
+            padding: FlowSpacing.symmetric(context, horizontal: 16),
+            child: FlowRow(
+              gap: FlowSpacing.md(context),
+              children: [
+                Expanded(
+                  child: FlowContainer(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: FlowRadius.md(context),
+                    ),
+                    child: Column(
+                      children: [
+                        FlowText('Adaptive Container', style: FlowTextStyle.title(context)),
+                        SizedBox(height: FlowSpacing.sm(context)),
+                        const FlowText('Resize window to see me stack!'),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: FlowContainer(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: FlowRadius.md(context),
+                    ),
+                    child: Column(
+                      children: [
+                        FlowText('Scaling Magic', style: FlowTextStyle.title(context)),
+                        SizedBox(height: FlowSpacing.sm(context)),
+                        const FlowText('Everything scales proportionally.'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: FlowSpacing.xxl(context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildComponents(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _SectionLabel('Visibility — FlowVisibility'),
+          FlowContainer(
+            child: Card(
+              child: FlowContainer(
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline),
+                    SizedBox(width: FlowSpacing.md(context)),
+                    Expanded(
+                      child: FlowText(
+                        'Try resizing your browser or screen.',
+                        style: FlowTextStyle.body(context),
+                      ),
+                    ),
+                    FlowVisibility.expandedOnly(
+                      child: Chip(
+                        label: const Text('Desktop Exclusive Badge'),
+                        backgroundColor: Colors.blue.shade100,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const _SectionLabel('Typography Scale'),
+          const _TypeScaleDemo(),
+          SizedBox(height: FlowSpacing.xxl(context)),
+        ],
       ),
     );
   }
@@ -157,30 +198,44 @@ class _LoginCard extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
+  final IconData icon;
 
-  const _StatCard({required this.label, required this.value});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // New in v0.2.0: using context.isCompact extension
+    final bool isCompact = context.isCompact;
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: FlowRadius.md(context)),
       child: FlowContainer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            FlowText(
-              value,
-              style: FlowTextStyle.title(context).copyWith(
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            SizedBox(height: FlowSpacing.xs(context)),
-            FlowText(
-              label,
-              style: FlowTextStyle.label(context).copyWith(
-                color: Colors.grey[600],
-              ),
+            if (!isCompact) ...[
+              Icon(icon, color: Theme.of(context).colorScheme.primary),
+              SizedBox(width: FlowSpacing.md(context)),
+            ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FlowText(
+                  value,
+                  style: FlowTextStyle.title(context).copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                FlowText(
+                  label,
+                  style: FlowTextStyle.label(context).copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -200,19 +255,17 @@ class _TypeScaleDemo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FlowText('Display — 48sp', style: FlowTextStyle.display(context)),
+          FlowText('Display — Hero text', style: FlowTextStyle.display(context)),
           SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Headline — 32sp', style: FlowTextStyle.headline(context)),
+          FlowText('Headline — Page headers', style: FlowTextStyle.headline(context)),
           SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Title — 22sp', style: FlowTextStyle.title(context)),
+          FlowText('Title — Section headers', style: FlowTextStyle.title(context)),
           SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Body — 16sp', style: FlowTextStyle.body(context)),
+          FlowText('Body — Standard copy', style: FlowTextStyle.body(context)),
           SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Body Small — 14sp', style: FlowTextStyle.bodySmall(context)),
+          FlowText('Label — Captions', style: FlowTextStyle.label(context)),
           SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Label — 12sp', style: FlowTextStyle.label(context)),
-          SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Micro — 10sp', style: FlowTextStyle.micro(context)),
+          FlowText('Micro — Small badges', style: FlowTextStyle.micro(context)),
         ],
       ),
     );

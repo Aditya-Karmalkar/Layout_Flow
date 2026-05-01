@@ -1,10 +1,13 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import '../flow_scope.dart';
+import 'flow_theme.dart';
 
 /// Adaptive spacing tokens for layout_flow.
 ///
 /// All values scale automatically with the screen size via [FlowConfig.w].
 /// Use these instead of raw numbers to keep spacing consistent across devices.
+///
+/// These tokens derive from [FlowTheme.spacingBase] (default 8.0).
 ///
 /// ```dart
 /// Padding(
@@ -15,23 +18,41 @@ import '../flow_scope.dart';
 class FlowSpacing {
   FlowSpacing._();
 
-  /// 4dp base — use for tight internal gaps.
-  static double xs(BuildContext context) => FlowScope.of(context).w(4);
+  /// 0.5x base — use for tight internal gaps (default 4dp).
+  static double xs(BuildContext context) {
+    final base = FlowTheme.of(context).spacingBase;
+    return FlowScope.of(context).w(base * 0.5);
+  }
 
-  /// 8dp base — use for small gaps between related items.
-  static double sm(BuildContext context) => FlowScope.of(context).w(8);
+  /// 1x base — use for small gaps between related items (default 8dp).
+  static double sm(BuildContext context) {
+    final base = FlowTheme.of(context).spacingBase;
+    return FlowScope.of(context).w(base);
+  }
 
-  /// 16dp base — standard content padding / card padding.
-  static double md(BuildContext context) => FlowScope.of(context).w(16);
+  /// 2x base — standard content padding / card padding (default 16dp).
+  static double md(BuildContext context) {
+    final base = FlowTheme.of(context).spacingBase;
+    return FlowScope.of(context).w(base * 2);
+  }
 
-  /// 24dp base — section gaps.
-  static double lg(BuildContext context) => FlowScope.of(context).w(24);
+  /// 3x base — section gaps (default 24dp).
+  static double lg(BuildContext context) {
+    final base = FlowTheme.of(context).spacingBase;
+    return FlowScope.of(context).w(base * 3);
+  }
 
-  /// 32dp base — major section separators.
-  static double xl(BuildContext context) => FlowScope.of(context).w(32);
+  /// 4x base — major section separators (default 32dp).
+  static double xl(BuildContext context) {
+    final base = FlowTheme.of(context).spacingBase;
+    return FlowScope.of(context).w(base * 4);
+  }
 
-  /// 48dp base — screen-level vertical rhythm.
-  static double xxl(BuildContext context) => FlowScope.of(context).w(48);
+  /// 6x base — screen-level vertical rhythm (default 48dp).
+  static double xxl(BuildContext context) {
+    final base = FlowTheme.of(context).spacingBase;
+    return FlowScope.of(context).w(base * 6);
+  }
 
   /// Returns a symmetric [EdgeInsets] scaled to the screen.
   static EdgeInsets symmetric(

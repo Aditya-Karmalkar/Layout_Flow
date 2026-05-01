@@ -11,6 +11,9 @@ class FlowConfig {
   /// The design reference size (e.g. Size(375, 812) for iPhone 14).
   final Size design;
 
+  /// The device's safe area padding.
+  final EdgeInsets padding;
+
   /// The horizontal scale factor: screen.width / design.width.
   late final double scaleW;
 
@@ -24,7 +27,7 @@ class FlowConfig {
   /// The current device breakpoint inferred from screen width.
   late final FlowBreakpoint breakpoint;
 
-  FlowConfig(this.screen, this.design) {
+  FlowConfig(this.screen, this.design, {this.padding = EdgeInsets.zero}) {
     scaleW = screen.width / design.width;
     scaleH = screen.height / design.height;
     scaleText = scaleW.clamp(0.85, 1.25);

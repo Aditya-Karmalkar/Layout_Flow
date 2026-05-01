@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LayoutFlow DevTools</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        h1 {
+            font-size: 20px;
+            margin-top: 0;
+            color: #1A73E8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .card {
+            border: 1px solid #eee;
+            padding: 16px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111;
+        }
+        .status {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: #e8f0fe;
+            color: #1A73E8;
+        }
+        #refresh-btn {
+            background: #1A73E8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        #refresh-btn:hover {
+            background: #1557b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LayoutFlow Inspector</h1>
+        <p>Live metrics from the connected Flutter app.</p>
+
+        <div class="grid">
+            <div class="card">
+                <div class="label">Current Breakpoint</div>
+                <div id="breakpoint" class="value">---</div>
+            </div>
+            <div class="card">
+                <div class="label">Text Scale</div>
+                <div id="scaleText" class="value">---</div>
+            </div>
+            <div class="card">
+                <div class="label">Width Scale</div>
+                <div id="scaleW" class="value">---</div>
+            </div>
+            <div class="card">
+                <div class="label">Height Scale</div>
+                <div id="scaleH" class="value">---</div>
+            </div>
+            <div class="card">
+                <div class="label">Design Size</div>
+                <div id="designSize" class="value">---</div>
+            </div>
+            <div class="card">
+                <div class="label">Screen Size</div>
+                <div id="screenSize" class="value">---</div>
+            </div>
+        </div>
+
+        <div class="status">
+            <div>Version 0.2.0 <span class="badge">Active</span></div>
+            <button id="refresh-btn">Refresh Data</button>
+        </div>
+    </div>
+
+    <script>
+        // Communication with DevTools host
+        window.addEventListener('message', (event) => {
+            const message = event.data;
+            if (message.type === 'extensionEvent') {
+                // Handle events from the app if needed
+            }
+        });
+
+        async function fetchData() {
+            // In a real extension, we use the devtools protocol
+            // For this scaffold, we'll simulate the UI
+            console.log('Requesting LayoutFlow config...');
+            
+            // This is where you would call the service extension:
+            // eval('ext.layout_flow.getConfig')
+        }
+
+        document.getElementById('refresh-btn').onclick = fetchData;
+
+        // Initial fetch
+        fetchData();
+    </script>
+</body>
+</html>

@@ -46,3 +46,23 @@ class FlowScope extends InheritedWidget {
       config.screen != oldWidget.config.screen ||
       config.design != oldWidget.config.design;
 }
+
+/// Helper extensions on [BuildContext] to access [FlowConfig] with less boilerplate.
+extension FlowContextX on BuildContext {
+  /// Access the current [FlowConfig] directly.
+  ///
+  /// Equivalent to [FlowScope.of(context)].
+  FlowConfig get flow => FlowScope.of(this);
+
+  /// Access the current [FlowBreakpoint] directly.
+  FlowBreakpoint get flowBreakpoint => flow.breakpoint;
+
+  /// Returns true if the current screen is [FlowBreakpoint.compact].
+  bool get isCompact => flow.breakpoint == FlowBreakpoint.compact;
+
+  /// Returns true if the current screen is [FlowBreakpoint.medium].
+  bool get isMedium => flow.breakpoint == FlowBreakpoint.medium;
+
+  /// Returns true if the current screen is [FlowBreakpoint.expanded].
+  bool get isExpanded => flow.breakpoint == FlowBreakpoint.expanded;
+}

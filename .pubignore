@@ -2,12 +2,12 @@
 build/
 
 # Internal planning and design documents
+v0.2.0.md
 prd and mvp.md
 
 # Demo GIF — referenced via raw GitHub URL in README, no need to ship it
 # This keeps the package size minimal on pub.dev
 assets/
 
-# Dart tool generated files that are checked in but gitignored
-example/.dart_tool/
-.dart_tool/
+# DevTools Extension - Must be included
+!extension/devtools/build/

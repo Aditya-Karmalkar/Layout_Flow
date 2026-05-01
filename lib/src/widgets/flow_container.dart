@@ -40,6 +40,11 @@ class FlowContainer extends StatelessWidget {
   /// Alignment of the child within the container.
   final AlignmentGeometry? alignment;
 
+  /// Whether the child content should be scaled to fit the container.
+  ///
+  /// If true, uses [FittedBox] internally to scale the content.
+  final bool scaleContent;
+
   const FlowContainer({
     super.key,
     required this.child,
@@ -49,6 +54,7 @@ class FlowContainer extends StatelessWidget {
     this.width,
     this.height,
     this.alignment,
+    this.scaleContent = false,
   });
 
   @override
@@ -57,6 +63,14 @@ class FlowContainer extends StatelessWidget {
     final effectivePadding =
         padding ?? EdgeInsets.all(FlowSpacing.md(context));
 
+    Widget content = child;
+    if (scaleContent) {
+      content = FittedBox(
+        fit: BoxFit.scaleDown,
+        child: content,
+      );
+    }
+
     return Container(
       width: width != null ? flow.w(width!) : null,
       height: height != null ? flow.h(height!) : null,
@@ -64,7 +78,7 @@ class FlowContainer extends StatelessWidget {
       margin: margin,
       decoration: decoration,
       alignment: alignment,
-      child: child,
+      child: content,
     );
   }
 }
