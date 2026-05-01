@@ -66,10 +66,14 @@ class FlowRow extends StatelessWidget {
         : children;
 
     if (isCompact) {
+      // In Column mode, Expanded/Flexible children cause a layout crash when
+      // the Column is inside an unbounded-height parent (e.g. SingleChildScrollView).
+      // Unwrap them — crossAxisAlignment: stretch already fills the full width.
       return Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: columnMainAxisAlignment,
         crossAxisAlignment: columnCrossAxisAlignment,
-        children: spacedChildren,
+        children: _unwrapFlex(spacedChildren),
       );
     }
 
@@ -78,6 +82,18 @@ class FlowRow extends StatelessWidget {
       crossAxisAlignment: rowCrossAxisAlignment,
       children: spacedChildren,
     );
+  }
+
+  /// Unwraps [Expanded] and [Flexible] widgets to their inner child.
+  ///
+  /// Called only in Column mode, where flex sizing is invalid inside
+  /// vertically-unbounded parents like [SingleChildScrollView].
+  List<Widget> _unwrapFlex(List<Widget> widgets) {
+    return widgets.map((w) {
+      if (w is Expanded) return w.child;
+      if (w is Flexible) return w.child;
+      return w;
+    }).toList();
   }
 
   List<Widget> _intersperse(List<Widget> widgets, Widget separator) {
