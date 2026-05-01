@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2
+
+* **Documentation**: Switched to a high-compatibility raw GitHub URL format for the demo GIF to ensure visibility across all package mirrors including pub.dev.
+* **Metadata**: Updated feature summary versioning.
+
+## 0.2.1
+
+* **Documentation**: Fixed demo GIF path for correct rendering on pub.dev.
+* **Developer Tooling**: Stabilized `FlowDebugOverlay` positioning during screen transitions.
+* **UX**: Increased default width for debug overlay in minimized state to prevent clipping.
+
 ## 0.2.0
 
 ### Adaptive & Responsive Features

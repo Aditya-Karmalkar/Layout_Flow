@@ -8,11 +8,11 @@
 
 `layout_flow` is a constraint-driven, adaptive layout system for Flutter. It eliminates manual screen sizing, font scaling, and breakpoint boilerplate — so you write UI once and it just works on phones, tablets, and the web.
 
-![layout_flow demo](assets/layout_flow.gif)
+![layout_flow demo](https://github.com/Aditya-Karmalkar/Layout_Flow/raw/main/assets/layout_flow.gif)
 
 ---
 
-## 🚀 Key Features (v0.2.0)
+## 🚀 Key Features (v0.2.2)
 
 - **Constraint-First Design**: Widgets adapt based on their *parent* size, not just the device screen.
 - **Adaptive Components**: `FlowScaffold`, `FlowGrid`, and `FlowNavigationBar` handle complex UI transitions automatically.
