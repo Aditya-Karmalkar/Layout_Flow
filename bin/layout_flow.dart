@@ -79,7 +79,7 @@ void main(List<String> args) async {
     if (content != originalContent) {
       // Add import if missing
       if (!content.contains('package:layout_flow/layout_flow.dart')) {
-        content = "import 'package:layout_flow/layout_flow.dart';\n" + content;
+        content = "import 'package:layout_flow/layout_flow.dart';\n$content";
       }
 
       filesModified++;

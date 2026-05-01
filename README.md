@@ -8,24 +8,22 @@
 
 `layout_flow` is a constraint-driven, adaptive layout system for Flutter. It eliminates manual screen sizing, font scaling, and breakpoint boilerplate — so you write UI once and it just works on phones, tablets, and the web.
 
-![layout_flow demo — resize the window and watch the layout adapt automatically](https://raw.githubusercontent.com/Aditya-Karmalkar/Layout_Flow/main/assets/layout_flow.gif)
-
-> **Adaptive Layout:** Resize the window or rotate your device — `FlowRow` and `FlowGrid` handle the switching automatically, while all text and spacing scales with zero extra code.
+![layout_flow demo](assets/layout_flow.gif)
 
 ---
 
-## The problem with existing approaches
+## 🚀 Key Features (v0.2.0)
 
-Building responsive Flutter UIs today usually involves:
-- **Raw MediaQuery**: Fragile magic numbers and boilerplate in every file.
-- **ScreenUtil Extensions**: Suffixing every number with `.w` or `.sp` (cluttering your code).
-- **Code Duplication**: Maintaining multiple widget trees for different screen sizes.
-
-**`layout_flow` fixes this by providing a unified token system and smart widgets that adapt based on parent constraints.**
+- **Constraint-First Design**: Widgets adapt based on their *parent* size, not just the device screen.
+- **Adaptive Components**: `FlowScaffold`, `FlowGrid`, and `FlowNavigationBar` handle complex UI transitions automatically.
+- **Responsive Tokens**: Spacing, Typography, and Radii that scale proportionally without `.w` or `.h` clutter.
+- **Zero-Boilerplate Breakpoints**: Extensions like `context.isCompact` and `context.isExpanded`.
+- **Interactive DevTools**: On-screen draggable debug overlay for real-time inspection.
+- **CLI Migration Tool**: Refactor legacy `MediaQuery` apps to `layout_flow` in seconds.
 
 ---
 
-## How it works
+## 🛠 How it works
 
 ```mermaid
 graph TD
@@ -55,7 +53,7 @@ graph TD
 
 ---
 
-## Quick Start
+## 📦 Quick Start
 
 ### 1. Setup the Root
 Wrap your app with `LayoutFlow` and specify your design reference size (usually your Figma frame).
@@ -63,112 +61,75 @@ Wrap your app with `LayoutFlow` and specify your design reference size (usually 
 ```dart
 void main() {
   runApp(
-    LayoutFlow(
-      designSize: const Size(375, 812), // Your design reference
-      child: const MyApp(),
+    const LayoutFlow(
+      designSize: Size(375, 812), // Your Figma design size
+      child: MyApp(),
     ),
   );
 }
 ```
 
-### 2. Use Adaptive Widgets
-Write your UI using specialized widgets that understand scaling and breakpoints.
-
-```dart
-class ProfileCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return FlowContainer(
-      child: FlowRow(
-        gap: FlowSpacing.md(context),
-        children: [
-          const CircleAvatar(radius: 30),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FlowText('John Doe', style: FlowTextStyle.title(context)),
-                FlowText('Developer', style: FlowTextStyle.bodySmall(context)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
----
-
-## Core Widgets
-
-### FlowRow — Smart Switcher
-The workhorse of adaptive layout. It sits as a `Row` on tablets/desktops and collapses into a `Column` on phones.
-- **Default**: Uses local constraints (safe for sidebars).
-- **Named Modes**: `.orientation()` for portrait/landscape or `.breakpoint()` for fixed widths.
-
-### FlowNavigationBar — Adaptive Navigation
-Automatically transitions between a `BottomNavigationBar` (mobile) and a `NavigationRail` (tablet/desktop).
+### 2. Use the Adaptive Shell
+Use `FlowScaffold` to automatically handle sidebars on desktop and bottom bars on mobile.
 
 ```dart
 FlowScaffold(
   navigation: FlowNavigationBar(
-    selectedIndex: _index,
-    onDestinationSelected: (i) => setState(() => _index = i),
     destinations: [
-      FlowNavigationDestination(icon: Icons.home, label: 'Home'),
+      FlowNavigationDestination(icon: Icons.dashboard, label: 'Home'),
       FlowNavigationDestination(icon: Icons.settings, label: 'Settings'),
     ],
   ),
-  body: MyContent(),
+  body: DashboardContent(),
 )
 ```
 
-### FlowGrid — Responsive Columns
-Define column counts per breakpoint. No more manual modulo math or `MediaQuery` checks.
+---
+
+## 🧩 Core Components
+
+### FlowGrid — Responsive Grid
+Define column counts per breakpoint. No more manual math or `MediaQuery` checks.
 ```dart
 FlowGrid(
   columns: const FlowGridColumns(compact: 1, medium: 2, expanded: 4),
   gap: FlowSpacing.md(context),
-  children: [ ... ],
+  children: [ StatCard(), ... ],
 )
 ```
 
-### FlowVisibility — Conditional Display
-Declaratively show or hide components based on active breakpoints.
+### FlowSpacing — Smart Tokens
+Tokens ensure your app remains consistent across orientations. v0.2.0 uses **Symmetric Scaling** to prevent layout "explosion" in landscape.
+
 ```dart
-FlowVisibility.expandedOnly(child: DesktopSidebar())
+Container(
+  padding: FlowSpacing.all(context, 16), // Scales perfectly across all breakpoints
+  child: FlowText('Pro-grade adaptive UI', style: FlowTextStyle.title(context)),
+)
 ```
 
-### FlowDebugOverlay — Visual Inspector
-Add this to your root in debug mode to see active breakpoints and scale factors live on screen.
-
----
-
-## Design Tokens
-
-Tokens ensure your app remains consistent. They are based on an **8pt grid** by default but can be customized via `FlowTheme`.
-
-| Token | Purpose | Scaling |
-|---|---|---|
-| **FlowSpacing** | Padding, Margins, Gaps | Width-based (`scaleW`) |
-| **FlowTextStyle** | Typography system | Clamped Text-based (`scaleText`) |
-| **FlowRadius** | Border radii | Symmetric-based (`sp`) |
-
-### Customizing the Grid
-Override the base unit for your entire design system:
+### FlowDebugOverlay — Draggable Inspector
+Add this to your root in debug mode. It's interactive, draggable, and collapsible.
 ```dart
-ThemeData(
-  extensions: [
-    const FlowTheme(spacingBase: 10.0), // All tokens now derive from 10pt
-  ],
+FlowDebugOverlay(
+  enabled: kDebugMode,
+  child: MyApp(),
 )
 ```
 
 ---
 
-## Extensions
+## ⚡ CLI Migration Tool
+Already have a project using `MediaQuery.of(context).size.width`? Migrate to `layout_flow` extensions automatically:
+
+```bash
+dart run layout_flow migrate
+```
+*This tool refactors your codebase to use context extensions and responsive tokens.*
+
+---
+
+## 📱 BuildContext Extensions
 v0.2.0 adds powerful extensions to `BuildContext`:
 - `context.flow`: Access the scaling engine.
 - `context.isCompact` / `context.isMedium` / `context.isExpanded`: Quick breakpoint checks.
@@ -176,23 +137,21 @@ v0.2.0 adds powerful extensions to `BuildContext`:
 
 ---
 
-## Roadmap
+## 🗺 Roadmap
 
-### v0.2.0 (Current)
-- [x] FlowGrid — responsive grid with auto column count
-- [x] FlowScaffold — full-page adaptive layout shell
-- [x] FlowNavigationBar — adaptive navigation rail/bottom bar
-- [x] FlowSidebar — advanced collapsible sidebar
-- [x] FlowDebugOverlay — live scale factor inspector
-- [x] DevTools Extension — browser-integrated inspector
-- [x] CLI Migration Tool — automatic `MediaQuery` refactoring
+### v0.2.0 (Latest Release)
+- [x] **FlowGrid**: Auto column count per breakpoint
+- [x] **FlowScaffold**: Adaptive layout shell with Sidebar/Rail support
+- [x] **CLI Migration Tool**: Automated `MediaQuery` refactoring
+- [x] **Interactive Overlay**: Draggable & collapsible debug tool
+- [x] **Constraint-First**: Engine optimized for embedded/nested layouts
 
-### Future
-- [ ] Adaptive Navigation Rail — nested navigation & sub-menus
-- [ ] Desktop/Web Optimized — hover & cursor global styles
-- [ ] Theme Builder — GUI for generating `FlowTheme` values
+### Future (v1.0.0)
+- [ ] **Adaptive Navigation Rail**: Advanced nested navigation & sub-menus
+- [ ] **Adaptive Hover**: Desktop-first hover & cursor states
+- [ ] **Layout Flow CLI**: Create new projects with pre-configured adaptive components
 
 ---
 
-## License
+## 📄 License
 MIT — see [LICENSE](LICENSE).

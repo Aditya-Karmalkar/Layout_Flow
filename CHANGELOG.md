@@ -14,7 +14,7 @@
 ### Developer Tooling & Ergonomics
 * **CLI Migration Tool**: New `dart run layout_flow migrate` command to automatically refactor legacy `MediaQuery` code.
 * **DevTools Extension**: Browser-integrated inspector for live breakpoint and scale factor monitoring.
-* **FlowDebugOverlay**: New widget to visualize screen metrics in real-time.
+* **FlowDebugOverlay**: New interactive, draggable, and collapsible widget to visualize screen metrics in real-time.
 * **FlowContext Extensions**: Added `context.flow`, `context.isCompact`, `context.isExpanded`, etc.
 * **Padding Support**: `FlowConfig` now captures and provides safe area padding via `context.flow.padding`.
 

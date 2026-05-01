@@ -48,7 +48,8 @@ class _DemoHomeState extends State<DemoHome> {
     return FlowScaffold(
       navigation: FlowNavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        onDestinationSelected: (index) =>
+            setState(() => _selectedIndex = index),
         destinations: const [
           FlowNavigationDestination(
             icon: Icons.dashboard_outlined,
@@ -96,16 +97,25 @@ class _DemoHomeState extends State<DemoHome> {
             padding: FlowSpacing.symmetric(context, horizontal: 16),
             child: FlowGrid(
               gap: FlowSpacing.md(context),
+              childAspectRatio: context.isCompact
+                  ? 3.2
+                  : (MediaQuery.of(context).orientation == Orientation.landscape
+                      ? 2.0
+                      : 2.5),
               columns: const FlowGridColumns(
                 compact: 1,
                 medium: 2,
                 expanded: 4,
               ),
               children: const [
-                _StatCard(label: 'Revenue', value: '\$12.4k', icon: Icons.attach_money),
+                _StatCard(
+                    label: 'Revenue',
+                    value: '\$12.4k',
+                    icon: Icons.attach_money),
                 _StatCard(label: 'Users', value: '3.8k', icon: Icons.people),
                 _StatCard(label: 'Sessions', value: '9.1k', icon: Icons.timer),
-                _StatCard(label: 'Growth', value: '+14%', icon: Icons.trending_up),
+                _StatCard(
+                    label: 'Growth', value: '+14%', icon: Icons.trending_up),
               ],
             ),
           ),
@@ -123,7 +133,8 @@ class _DemoHomeState extends State<DemoHome> {
                     ),
                     child: Column(
                       children: [
-                        FlowText('Adaptive Container', style: FlowTextStyle.title(context)),
+                        FlowText('Adaptive Container',
+                            style: FlowTextStyle.title(context)),
                         SizedBox(height: FlowSpacing.sm(context)),
                         const FlowText('Resize window to see me stack!'),
                       ],
@@ -138,7 +149,8 @@ class _DemoHomeState extends State<DemoHome> {
                     ),
                     child: Column(
                       children: [
-                        FlowText('Scaling Magic', style: FlowTextStyle.title(context)),
+                        FlowText('Scaling Magic',
+                            style: FlowTextStyle.title(context)),
                         SizedBox(height: FlowSpacing.sm(context)),
                         const FlowText('Everything scales proportionally.'),
                       ],
@@ -214,28 +226,41 @@ class _StatCard extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: FlowRadius.md(context)),
       child: FlowContainer(
+        padding: FlowSpacing.symmetric(context, horizontal: 16, vertical: 8),
+        alignment: Alignment.center,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (!isCompact) ...[
               Icon(icon, color: Theme.of(context).colorScheme.primary),
               SizedBox(width: FlowSpacing.md(context)),
             ],
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                FlowText(
-                  value,
-                  style: FlowTextStyle.title(context).copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FlowText(
+                      value,
+                      style: FlowTextStyle.title(context).copyWith(
+                        fontWeight: FontWeight.w700,
+                        height: 1.1,
+                      ),
+                    ),
+                    FlowText(
+                      label,
+                      style: FlowTextStyle.label(context).copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
-                FlowText(
-                  label,
-                  style: FlowTextStyle.label(context).copyWith(
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
@@ -252,21 +277,32 @@ class _TypeScaleDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlowContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FlowText('Display — Hero text', style: FlowTextStyle.display(context)),
-          SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Headline — Page headers', style: FlowTextStyle.headline(context)),
-          SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Title — Section headers', style: FlowTextStyle.title(context)),
-          SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Body — Standard copy', style: FlowTextStyle.body(context)),
-          SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Label — Captions', style: FlowTextStyle.label(context)),
-          SizedBox(height: FlowSpacing.sm(context)),
-          FlowText('Micro — Small badges', style: FlowTextStyle.micro(context)),
-        ],
+      padding: FlowSpacing.all(context, 16),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FlowText('Display — Hero text',
+                style: FlowTextStyle.display(context)),
+            SizedBox(height: FlowSpacing.md(context)),
+            FlowText('Headline — Page headers',
+                style: FlowTextStyle.headline(context)),
+            SizedBox(height: FlowSpacing.md(context)),
+            FlowText('Title — Section headers',
+                style: FlowTextStyle.title(context)),
+            SizedBox(height: FlowSpacing.md(context)),
+            FlowText('Body — Standard copy',
+                style: FlowTextStyle.body(context)),
+            SizedBox(height: FlowSpacing.sm(context)),
+            FlowText('Label — Captions', style: FlowTextStyle.label(context)),
+            SizedBox(height: FlowSpacing.xs(context)),
+            FlowText('Micro — Small badges',
+                style: FlowTextStyle.micro(context)),
+          ],
+        ),
       ),
     );
   }
