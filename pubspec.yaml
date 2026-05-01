@@ -1,0 +1,27 @@
+name: layout_flow
+description: A constraint-driven adaptive layout system for Flutter. Write UI once — let it flow across every screen.
+version: 0.1.0
+homepage: https://github.com/Aditya-Karmalkar/Layout_Flow
+repository: https://github.com/Aditya-Karmalkar/Layout_Flow
+issue_tracker: https://github.com/Aditya-Karmalkar/Layout_Flow/issues
+
+topics:
+  - responsive
+  - layout
+  - adaptive
+  - scaling
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
