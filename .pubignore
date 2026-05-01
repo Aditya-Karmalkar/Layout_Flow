@@ -1,0 +1,13 @@
+# Build artifacts — can be enormous (dill caches, native assets, etc.)
+build/
+
+# Internal planning and design documents
+prd and mvp.md
+
+# Demo GIF — referenced via raw GitHub URL in README, no need to ship it
+# This keeps the package size minimal on pub.dev
+assets/
+
+# Dart tool generated files that are checked in but gitignored
+example/.dart_tool/
+.dart_tool/
